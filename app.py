@@ -28,10 +28,14 @@ class SettingsUpdateRequest(BaseModel):
 class StatusUpdateRequest(BaseModel):
     status: str
 
-# 1. Головна сторінка Dashboard
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
+
+@app.get("/healthz")
+@app.get("/health")
+async def health_check():
+    return {"status": "ok"}
 
 # 2. Отримати список діалогів Direct
 @app.get("/api/threads")
