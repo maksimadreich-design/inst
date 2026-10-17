@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="uk" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ProstoDev — Executive Studio Control Center</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              dark: '#0B0F19',
+              card: '#111827',
+              border: '#1F2937'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #111827; }
+    ::-webkit-scrollbar-thumb { background: #374151; border-radius: 4px; }
+  </style>
+</head>
+<body class="bg-[#0B0F19] text-gray-100 font-sans antialiased min-h-screen flex flex-col">
+
+  <!-- Header -->
+  <header class="border-b border-gray-800 bg-[#111827]/80 backdrop-blur sticky top-0 z-50 px-6 py-4 flex items-center justify-between">
+    <div class="flex items-center space-x-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-500 flex items-center justify-center font-bold text-white shadow-lg shadow-indigo-500/20">
+        PD
+      </div>
+      <div>
+        <h1 class="text-lg font-bold tracking-tight text-white flex items-center gap-2">
+          ProstoDev Studio
+          <span class="text-xs font-medium px-2.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+            Autonomous AI
+          </span>
+        </h1>
+        <p class="text-xs text-gray-400">Керування Instagram Direct, Лідами та Зустрічами</p>
+      </div>
+    </div>
+
+    <!-- Live Status Pill & Global Switch -->
+    <div class="flex items-center gap-4">
+      <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        AI-Агенти активні
+      </div>
+      <a href="https://prostodev-studio.vercel.app/" target="_blank" class="text-xs text-gray-400 hover:text-white transition flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-800 hover:border-gray-700 bg-gray-900">
+        <i class="fa-solid fa-arrow-up-right-from-square"></i> Наш сайт
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+    <!-- Left Navigation Tabs -->
+    <div class="lg:col-span-3 space-y-2">
+      <button onclick="switchTab('inbox')" id="tab-btn-inbox" class="tab-btn active w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 shadow-sm">
+        <div class="flex items-center gap-3">
+          <i class="fa-brands fa-instagram text-lg"></i>
+          <span>Direct Чати</span>
+        </div>
+        <span id="threads-count-badge" class="px-2 py-0.5 text-xs rounded-full bg-indigo-600 text-white font-bold">0</span>
+      </button>
+
+      <button onclick="switchTab('leads')" id="tab-btn-leads" class="tab-btn w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition text-gray-400 hover:text-gray-200 hover:bg-gray-800/50 border border-transparent">
+        <div class="flex items-center gap-3">
+          <i class="fa-solid fa-users text-lg"></i>
+          <span>База Лідів (CRM)</span>
+        </div>
+        <span id="leads-count-badge" class="px-2 py-0.5 text-xs rounded-full bg-gray-800 text-gray-300">0</span>
+      </button>
+
+      <button onclick="switchTab('meetings')" id="tab-btn-meetings" class="tab-btn w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition text-gray-400 hover:text-gray-200 hover:bg-gray-800/50 border border-transparent">
+        <div class="flex items-center gap-3">
+          <i class="fa-solid fa-calendar-check text-lg"></i>
+          <span>Зустрічі (Meetings)</span>
+        </div>
+        <span id="meetings-count-badge" class="px-2 py-0.5 text-xs rounded-full bg-amber-500/20 text-amber-400">0</span>
+      </button>
+
+      <button onclick="switchTab('settings')" id="tab-btn-settings" class="tab-btn w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition text-gray-400 hover:text-gray-200 hover:bg-gray-800/50 border border-transparent">
+        <div class="flex items-center gap-3">
+          <i class="fa-solid fa-sliders text-lg"></i>
+          <span>Налаштування AI</span>
+        </div>
+      </button>
+
+      <!-- Quick Metrics Card -->
+      <div class="pt-6">
+        <div class="p-4 rounded-xl bg-gradient-to-b from-gray-900 to-gray-950 border border-gray-800 space-y-3">
+          <div class="text-xs text-gray-400 font-semibold tracking-wide uppercase">Статус безпеки</div>
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-gray-400">Анти-бан таймер:</span>
+            <span class="text-indigo-400 font-mono font-bold" id="metric-delay">45 сек</span>
+          </div>
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-gray-400">Фільтрація спаму:</span>
+            <span class="text-emerald-400 font-bold">100% Увімкнено</span>
+          </div>
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-gray-400">Діапазон зустрічей:</span>
+            <span class="text-gray-300 font-medium">09:00 - 21:00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Central Interactive Area -->
+    <div class="lg:col-span-9 bg-[#111827] border border-gray-800 rounded-2xl overflow-hidden shadow-2xl flex flex-col min-h-[640px]">
+
+      <!-- TAB 1: INBOX DIRECT CHAT -->
+      <div id="tab-inbox" class="tab-content flex-1 grid grid-cols-1 md:grid-cols-12 h-full">
+        <!-- Thread list (Left) -->
+        <div class="md:col-span-4 border-r border-gray-800 flex flex-col h-full bg-[#0E131F]">
+          <div class="p-3 border-b border-gray-800 flex items-center justify-between">
+            <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Діалоги Direct</span>
+            <button onclick="loadThreads()" class="text-xs text-indigo-400 hover:text-indigo-300">
+              <i class="fa-solid fa-rotate-right"></i> Оновити
+            </button>
+          </div>
+          <div id="threads-container" class="overflow-y-auto flex-1 divide-y divide-gray-800/60">
+            <!-- Dynamic thread items inserted here -->
+            <div class="p-6 text-center text-xs text-gray-500">Завантаження чатів...</div>
+          </div>
+        </div>
+
+        <!-- Chat messages view (Right) -->
+        <div class="md:col-span-8 flex flex-col h-full bg-[#111827]">
+          <!-- Active Chat Top Bar -->
+          <div id="active-chat-header" class="px-5 py-3.5 border-b border-gray-800 flex items-center justify-between bg-gray-900/40">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-indigo-500 to-pink-500 flex items-center justify-center font-bold text-sm">
+                @
+              </div>
+              <div>
+                <div class="font-bold text-sm text-white" id="chat-title-username">Оберіть діалог зі списку</div>
+                <div class="text-xs text-gray-400" id="chat-title-status">Статус AI: активний</div>
+              </div>
+            </div>
+            <!-- AI Toggle for this Chat -->
+            <div class="flex items-center gap-2">
+              <button id="toggle-ai-btn" onclick="toggleCurrentThreadAI()" class="text-xs px-3 py-1.5 rounded-lg border border-indigo-500/30 bg-indigo-500/10 text-indigo-300 hover:bg-indigo-500/20 transition">
+                <i class="fa-solid fa-robot"></i> AI увімкнено
+              </button>
+            </div>
+          </div>
+
+          <!-- Messages Stream -->
+          <div id="messages-container" class="flex-1 overflow-y-auto p-5 space-y-4">
+            <div class="h-full flex items-center justify-center text-center text-gray-500 text-sm">
+              Оберіть клієнта зліва, щоб переглянути листування та відповісти вручну
+            </div>
+          </div>
+
+          <!-- Manual Reply Box -->
+          <div class="p-4 border-t border-gray-800 bg-gray-900/60">
+            <form onsubmit="handleSendManualMessage(event)" class="flex gap-2">
+              <input type="text" id="manual-message-input" placeholder="Написати повідомлення від свого імені в Direct..." class="flex-1 bg-gray-800 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500">
+              <button type="submit" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold rounded-xl transition flex items-center gap-2">
+                <span>Надіслати</span>
+                <i class="fa-solid fa-paper-plane text-xs"></i>
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: LEADS CRM -->
+      <div id="tab-leads" class="tab-content hidden flex-1 p-6 space-y-4">
+        <div class="flex items-center justify-between pb-2">
+          <div>
+            <h2 class="text-lg font-bold text-white">База лідів з Instagram</h2>
+            <p class="text-xs text-gray-400">Автоматично кваліфіковані клієнти студії ProstoDev</p>
+          </div>
+          <button onclick="loadLeads()" class="text-xs px-3 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300">
+            <i class="fa-solid fa-rotate-right"></i> Оновити таблицю
+          </button>
+        </div>
+
+        <div class="overflow-x-auto border border-gray-800 rounded-xl">
+          <table class="w-full text-left text-sm text-gray-300">
+            <thead class="text-xs uppercase bg-gray-900/80 text-gray-400 border-b border-gray-800">
+              <tr>
+                <th class="px-4 py-3">Instagram</th>
+                <th class="px-4 py-3">Послуга</th>
+                <th class="px-4 py-3">Контакт</th>
+                <th class="px-4 py-3">Статус</th>
+                <th class="px-4 py-3">Дата додавання</th>
+                <th class="px-4 py-3 text-right">Дії</th>
+              </tr>
+            </thead>
+            <tbody id="leads-table-body" class="divide-y divide-gray-800">
+              <tr>
+                <td colspan="6" class="px-4 py-8 text-center text-gray-500">Завантаження лідів...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 3: MEETINGS -->
+      <div id="tab-meetings" class="tab-content hidden flex-1 p-6 space-y-4">
+        <div class="flex items-center justify-between pb-2">
+          <div>
+            <h2 class="text-lg font-bold text-white">Заплановані зустрічі (45-60 хв)</h2>
+            <p class="text-xs text-gray-400">Робочий час: 09:00 - 21:00 (Пн - Нд)</p>
+          </div>
+          <button onclick="loadAppointments()" class="text-xs px-3 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300">
+            <i class="fa-solid fa-rotate-right"></i> Оновити
+          </button>
+        </div>
+
+        <div id="appointments-cards-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Dynamic meeting cards -->
+        </div>
+      </div>
+
+      <!-- TAB 4: AI SETTINGS & SCRIPTS -->
+      <div id="tab-settings" class="tab-content hidden flex-1 p-6 space-y-6">
+        <div>
+          <h2 class="text-lg font-bold text-white">Керування логікою та скриптами AI</h2>
+          <p class="text-xs text-gray-400">Налаштування B2B поведінки, анти-бан таймерів та першого повідомлення</p>
+        </div>
+
+        <div class="space-y-4 max-w-2xl">
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">
+              Анти-бан затримка відповіді (секунди)
+            </label>
+            <input type="number" id="setting-delay" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500" value="45">
+            <p class="text-xs text-gray-500 mt-1">Рекомендовано: 30-90 секунд + статус друку, щоб уникнути блокування від Meta.</p>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">
+              Перше вітальне повідомлення (Шаблон)
+            </label>
+            <textarea id="setting-greeting" rows="3" class="w-full bg-gray-900 border border-gray-700 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-indigo-500"></textarea>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">
+              Сувора B2B інструкція для ШІ
+            </label>
+            <textarea id="setting-instructions" rows="4" class="w-full bg-gray-900 border border-gray-700 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-indigo-500"></textarea>
+            <p class="text-xs text-gray-500 mt-1">Правило: без точних цін у чаті, кличе на зустріч 45-60 хв, локація FPV — Львівська область.</p>
+          </div>
+
+          <button onclick="saveSettings()" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold rounded-xl shadow-lg shadow-indigo-600/30 transition">
+            <i class="fa-solid fa-floppy-disk mr-1"></i> Зберегти налаштування
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    let currentThreadId = null;
+
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(el => {
+        el.classList.remove('bg-indigo-600/10', 'text-indigo-400', 'border-indigo-500/20');
+        el.classList.add('text-gray-400', 'border-transparent');
+      });
+
+      document.getElementById('tab-' + tabName).classList.remove('hidden');
+      const activeBtn = document.getElementById('tab-btn-' + tabName);
+      activeBtn.classList.remove('text-gray-400', 'border-transparent');
+      activeBtn.classList.add('bg-indigo-600/10', 'text-indigo-400', 'border-indigo-500/20');
+
+      if (tabName === 'inbox') loadThreads();
+      if (tabName === 'leads') loadLeads();
+      if (tabName === 'meetings') loadAppointments();
+      if (tabName === 'settings') loadSettings();
+    }
+
+    async function loadThreads() {
+      try {
+        const res = await fetch('/api/threads');
+        const threads = await res.json();
+        document.getElementById('threads-count-badge').innerText = threads.length;
+        
+        const container = document.getElementById('threads-container');
+        if (threads.length === 0) {
+          container.innerHTML = '<div class="p-6 text-center text-xs text-gray-500">Немає активних чатів у базі. Запустіть агента або надішліть перше повідомлення.</div>';
+          return;
+        }
+
+        container.innerHTML = threads.map(t => `
+          <div onclick="selectThread('${t.thread_id}', '${t.username}')" class="p-3.5 hover:bg-gray-800/60 cursor-pointer transition ${currentThreadId === t.thread_id ? 'bg-indigo-600/10 border-l-2 border-indigo-500' : ''}">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-sm text-gray-100">@${t.username}</span>
+              <span class="text-[10px] text-gray-500">${t.last_message_at ? t.last_message_at.slice(11, 16) : ''}</span>
+            </div>
+            <div class="text-xs text-gray-400 truncate mt-1">Статус: ${t.status} | AI: ${t.ai_enabled ? '🟢' : '⚪️'}</div>
+          </div>
+        `).join('');
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function selectThread(threadId, username) {
+      currentThreadId = threadId;
+      document.getElementById('chat-title-username').innerText = '@' + username;
+      loadThreads();
+      
+      const res = await fetch('/api/threads/' + threadId + '/messages');
+      const messages = await res.json();
+      const container = document.getElementById('messages-container');
+
+      if (messages.length === 0) {
+        container.innerHTML = '<div class="text-center text-gray-500 text-xs py-8">Повідомлень поки що немає</div>';
+        return;
+      }
+
+      container.innerHTML = messages.map(m => {
+        const isClient = m.sender === 'client';
+        return `
+          <div class="flex flex-col ${isClient ? 'items-start' : 'items-end'}">
+            <span class="text-[10px] text-gray-500 mb-1 px-1">${isClient ? '@' + username : 'ProstoDev AI / Ви'}</span>
+            <div class="max-w-[75%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${isClient ? 'bg-gray-800 text-gray-200 border border-gray-700/60 rounded-tl-sm' : 'bg-indigo-600 text-white rounded-tr-sm shadow-md shadow-indigo-600/10'}">
+              ${m.text}
+            </div>
+            <span class="text-[10px] text-gray-600 mt-1 px-1">${m.created_at ? m.created_at.slice(11, 16) : ''}</span>
+          </div>
+        `;
+      }).join('');
+
+      container.scrollTop = container.scrollHeight;
+    }
+
+    async function handleSendManualMessage(e) {
+      e.preventDefault();
+      if (!currentThreadId) {
+        alert('Спочатку оберіть діалог зі списку зліва');
+        return;
+      }
+      const input = document.getElementById('manual-message-input');
+      const text = input.value.trim();
+      if (!text) return;
+
+      await fetch('/api/send_message', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ thread_id: currentThreadId, text: text })
+      });
+
+      input.value = '';
+      selectThread(currentThreadId, document.getElementById('chat-title-username').innerText.replace('@', ''));
+    }
+
+    async function loadLeads() {
+      const res = await fetch('/api/leads');
+      const leads = await res.json();
+      document.getElementById('leads-count-badge').innerText = leads.length;
+
+      const tbody = document.getElementById('leads-table-body');
+      if (leads.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="px-4 py-8 text-center text-gray-500">Лідів поки немає. Агент додасть сюди контакти автоматично.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = leads.map(l => `
+        <tr class="hover:bg-gray-800/40">
+          <td class="px-4 py-3 font-semibold text-white">@${l.username}</td>
+          <td class="px-4 py-3"><span class="px-2 py-0.5 rounded text-xs bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">${l.service || 'Загальне'}</span></td>
+          <td class="px-4 py-3 text-gray-300 font-mono text-xs">${l.phone || l.telegram || '—'}</td>
+          <td class="px-4 py-3"><span class="px-2 py-0.5 rounded text-xs bg-emerald-500/10 text-emerald-400">${l.status}</span></td>
+          <td class="px-4 py-3 text-xs text-gray-500">${l.created_at ? l.created_at.slice(0, 16) : ''}</td>
+          <td class="px-4 py-3 text-right">
+            <a href="https://instagram.com/${l.username}" target="_blank" class="text-xs text-indigo-400 hover:underline">Профіль</a>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    async function loadAppointments() {
+      const res = await fetch('/api/appointments');
+      const apps = await res.json();
+      document.getElementById('meetings-count-badge').innerText = apps.length;
+
+      const container = document.getElementById('appointments-cards-container');
+      if (apps.length === 0) {
+        container.innerHTML = '<div class="col-span-2 text-center text-gray-500 py-12 text-sm">Немає призначених зустрічей наразі.</div>';
+        return;
+      }
+
+      container.innerHTML = apps.map(a => `
+        <div class="p-5 rounded-xl bg-gray-900 border border-gray-800 flex flex-col justify-between space-y-4">
+          <div class="flex items-start justify-between">
+            <div>
+              <span class="text-xs uppercase font-bold text-indigo-400 tracking-wider">Зустріч на 45 хв</span>
+              <h3 class="text-base font-bold text-white mt-1">@${a.username}</h3>
+              <p class="text-xs text-gray-400 mt-0.5"><i class="fa-regular fa-clock mr-1"></i> ${a.appointment_date}</p>
+            </div>
+            <span class="px-2.5 py-1 rounded-full text-xs font-semibold ${a.status === 'confirmed' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}">
+              ${a.status === 'confirmed' ? 'Підтверджено' : 'Очікує узгодження'}
+            </span>
+          </div>
+          <div class="flex gap-2 pt-2 border-t border-gray-800">
+            <button onclick="updateAppointmentStatus(${a.id}, 'confirmed')" class="flex-1 py-2 text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 rounded-lg text-white transition">
+              <i class="fa-solid fa-check mr-1"></i> Підтвердити
+            </button>
+            <button onclick="updateAppointmentStatus(${a.id}, 'rescheduled')" class="flex-1 py-2 text-xs font-semibold bg-gray-800 hover:bg-gray-700 rounded-lg text-gray-300 transition">
+              <i class="fa-solid fa-calendar-xmark mr-1"></i> Перенести
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function updateAppointmentStatus(id, newStatus) {
+      await fetch('/api/appointments/' + id + '/status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus })
+      });
+      loadAppointments();
+    }
+
+    async function loadSettings() {
+      const res = await fetch('/api/settings');
+      const data = await res.json();
+      if (data.first_reply_delay_sec) {
+        document.getElementById('setting-delay').value = data.first_reply_delay_sec;
+        document.getElementById('metric-delay').innerText = data.first_reply_delay_sec + ' сек';
+      }
+      if (data.greeting_template) document.getElementById('setting-greeting').value = data.greeting_template;
+      if (data.b2b_sales_instructions) document.getElementById('setting-instructions').value = data.b2b_sales_instructions;
+    }
+
+    async function saveSettings() {
+      const payload = {
+        first_reply_delay_sec: document.getElementById('setting-delay').value,
+        greeting_template: document.getElementById('setting-greeting').value,
+        b2b_sales_instructions: document.getElementById('setting-instructions').value
+      };
+      await fetch('/api/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      alert('Налаштування збережено успішно!');
+      loadSettings();
+    }
+
+    // Початкове завантаження
+    loadThreads();
+    loadSettings();
+    setInterval(loadThreads, 10000);
+  </script>
+</body>
+</html>
