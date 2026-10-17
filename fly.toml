@@ -1,10 +1,15 @@
+# fly.toml app configuration file generated for inst on 2026-10-17T22:04:35Z
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
 app = 'inst'
 primary_region = 'ams'
 
 [build]
 
 [http_service]
-  internal_port = 8000
+  internal_port = 3000
   force_https = true
   auto_stop_machines = 'stop'
   auto_start_machines = true
@@ -15,3 +20,4 @@ primary_region = 'ams'
   memory = '512mb'
   cpu_kind = 'shared'
   cpus = 1
+  memory_mb = 512

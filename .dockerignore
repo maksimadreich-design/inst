@@ -1,0 +1,7 @@
+.env
+ig_session.json
+prostodev.db
+__pycache__/
+*.log
+node_modules/
+
